@@ -5,69 +5,138 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>CookieGrabber.io — Delivery Dashboard</title>
 <style>
-  :root{
-    --mid:#07102a; --navy:#021733; --card:#071733; --accent:#6ea7ff;
+  :root {
+    --midnight: #050c1a;
+    --navy: #061f3b;
+    --neon: #0ff;
+    --accent: #5fc8ff;
   }
-  html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;
-    background:linear-gradient(160deg,var(--mid),var(--navy));
-    color:#e6eef8;display:flex;align-items:center;justify-content:center;}
-  .card{width:min(880px,94%);padding:28px;border-radius:12px;
-    background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));
-    box-shadow:0 10px 30px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.04);}
-  h1{margin:0 0 8px 0;font-size:20px}
-  p.lead{margin:0 0 18px 0;color:#bcd6ff;font-size:13px}
-  label{display:block;margin-bottom:8px;font-size:13px;color:#bcd6ff}
-  input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);
-    background:rgba(255,255,255,0.02);color:inherit;font-size:14px;outline:none}
-  .row{display:flex;gap:10px;margin-top:12px}
-  button{padding:10px 14px;border-radius:9px;border:none;font-weight:700;cursor:pointer}
-  button.primary{background:linear-gradient(90deg,var(--accent),#2ea0ff);color:#04243b}
-  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:#cfe6ff}
-  .hint{margin-top:10px;font-size:12px;color:#9fbff7}
-  @media(max-width:560px){ .row{flex-direction:column} }
+
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color:#e6eef8;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(0,255,255,0.06), transparent 60%),
+      radial-gradient(ellipse at 70% 80%, rgba(0,140,255,0.08), transparent 60%),
+      linear-gradient(160deg, var(--midnight), var(--navy));
+    background-size: cover;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  /* animated subtle glow shimmer */
+  @keyframes glowmove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  body::before {
+    content:"";
+    position:fixed;
+    inset:0;
+    background:linear-gradient(270deg, rgba(0,255,255,0.05), rgba(255,0,255,0.05), rgba(0,140,255,0.05));
+    background-size:400% 400%;
+    animation:glowmove 16s ease infinite;
+    z-index:-1;
+    filter:blur(120px);
+  }
+
+  .card{
+    width:min(380px, 90%);
+    min-height:580px;
+    background:rgba(10,20,40,0.7);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:16px;
+    padding:28px;
+    box-shadow:0 0 25px rgba(0,255,255,0.08);
+    backdrop-filter:blur(10px);
+  }
+
+  h1{
+    text-align:center;
+    font-size:22px;
+    margin:0 0 16px 0;
+    color:var(--accent);
+    text-shadow:0 0 8px rgba(95,200,255,0.5);
+  }
+
+  label{
+    font-size:13px;
+    color:#bcd6ff;
+    display:block;
+    margin-bottom:6px;
+  }
+
+  input, textarea{
+    width:100%;
+    border:none;
+    border-radius:8px;
+    background:rgba(255,255,255,0.04);
+    color:#e6eef8;
+    padding:10px;
+    font-size:14px;
+    margin-bottom:14px;
+    outline:none;
+    transition: box-shadow 0.25s ease;
+  }
+  input:focus, textarea:focus{
+    box-shadow:0 0 6px var(--accent);
+  }
+
+  button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(90deg, var(--accent), #00baff);
+    color:#041b2e;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  button:hover{
+    transform:translateY(-1px);
+    box-shadow:0 0 10px rgba(95,200,255,0.4);
+  }
+
+  .hint{
+    margin-top:16px;
+    text-align:center;
+    font-size:12px;
+    color:#9fbff7;
+  }
 </style>
 </head>
 <body>
-  <main class="card" role="main" aria-labelledby="title">
-    <header style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <div style="width:56px;height:56px;border-radius:9px;background:rgba(110,167,255,0.08);
-                  display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)">CG</div>
-      <div>
-        <h1 id="title">CookieGrabber.io — Delivery Dashboard</h1>
-        <p class="lead">Site owner dashboard — demo. This page is safe: it does not collect cookies or send data anywhere unless you add your own code.</p>
-      </div>
-    </header>
+  <main class="card">
+    <h1>CookieGrabber.io</h1>
 
     <label for="orderId">Order ID</label>
-    <input id="orderId" placeholder="e.g. #12345" />
+    <input id="orderId" placeholder="#12345" />
 
-    <label for="notes" style="margin-top:10px">Delivery notes</label>
-    <textarea id="notes" placeholder="Enter any delivery info..."></textarea>
+    <label for="delivery">Delivery address</label>
+    <textarea id="delivery" rows="4" placeholder="Enter address or delivery notes..."></textarea>
 
-    <div class="row">
-      <button class="primary" id="submitBtn">Preview & Log Locally</button>
-      <button class="ghost" id="clearBtn">Clear</button>
-    </div>
+    <button id="submitBtn">Submit Order (Local Preview)</button>
 
-    <div class="hint">Tip: After you add this `index.html` to your repo root and push, go to Settings → Pages and ensure the publishing source is correct. Then open your site in an incognito window to check.</div>
+    <div class="hint">This demo is local-only. Add your own backend later.</div>
   </main>
 
   <script>
     const order = document.getElementById('orderId');
-    const notes = document.getElementById('notes');
-    const submit = document.getElementById('submitBtn');
-    const clear = document.getElementById('clearBtn');
-
-    submit.addEventListener('click', () => {
+    const delivery = document.getElementById('delivery');
+    document.getElementById('submitBtn').addEventListener('click',()=>{
       const o = order.value.trim();
-      const n = notes.value.trim();
-      if (!o) return alert('Please enter an Order ID');
-      // Safe: only local preview and console.log
-      alert('Local preview:\\nOrder: ' + o + '\\nNotes: ' + (n||'[none]'));
-      console.log('[Local preview]', { order: o, notes: n, time: new Date().toISOString() });
+      const d = delivery.value.trim();
+      if(!o){ alert("Please enter an Order ID."); return; }
+      alert(`Local preview:\nOrder ID: ${o}\nDelivery: ${d||"[none]"}`);
+      console.log("[Local preview]", { order:o, delivery:d, time:new Date().toISOString() });
     });
-
-    clear.addEventListener('click', () => { order.value=''; notes.value=''; });
   </script>
 </body>
 </html>
